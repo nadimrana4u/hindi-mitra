@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>हिंदी मित्र — Hindi Mitra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Mukta:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#18183A;--ink-soft:#4A4A68;--ink-faint:#8A8AA0;
+  --paper:#FBF8F1;--paper-2:#FFFFFF;--card-line:#ECE6D8;
+  --marigold:#E2872A;--marigold-deep:#C56F18;--marigold-soft:#FAEBD4;
+  --peacock:#137C7C;--peacock-soft:#DCEEEC;
+  --green:#2E9E5B;--green-soft:#DCF0E3;--red:#D14B4B;--red-soft:#FAE2E1;
+  --gold:#E0A82E;
+  --radius:18px;--shadow:0 6px 28px rgba(24,24,58,.08);
+  --disp:"Tiro Devanagari Hindi",serif;--ui-hi:"Mukta",sans-serif;
+  --display:"Bricolage Grotesque",sans-serif;--body:"Inter",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;padding-bottom:88px;min-height:100vh}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px}
+
+header.top{padding:18px 0 10px}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand .logo{width:42px;height:42px;flex:none}
+.brand .mark{font-family:var(--disp);font-size:30px;font-weight:400;color:var(--ink);position:relative;line-height:1}
+.brand .mark::before{content:"";position:absolute;top:-7px;left:0;right:0;height:3px;background:var(--ink);border-radius:2px}
+.brand .en{font-family:var(--display);font-weight:800;font-size:15px;color:var(--marigold-deep);letter-spacing:.3px}
+.audiobadge{margin-left:auto;font-family:var(--ui-hi);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.audiobadge.ok{background:var(--green-soft);color:var(--green)}
+.audiobadge.warn{background:var(--marigold-soft);color:var(--marigold-deep)}
+
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--paper-2);border-top:1px solid var(--card-line);display:flex;justify-content:space-around;padding:8px 4px 10px;box-shadow:0 -4px 24px rgba(24,24,58,.06)}
+nav.tabs button{background:none;border:none;cursor:pointer;font-family:var(--ui-hi);display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-faint);font-size:11px;font-weight:600;padding:4px 6px;border-radius:12px;flex:1}
+nav.tabs button .ic{font-size:19px;line-height:1}
+nav.tabs button.active{color:var(--marigold-deep)}
+@media(min-width:760px){
+  body{padding-bottom:24px}
+  nav.tabs{position:sticky;top:0;bottom:auto;border-top:none;border-bottom:1px solid var(--card-line);justify-content:flex-start;padding:10px 0;box-shadow:none;background:var(--paper)}
+  nav.tabs .wrapn{display:flex;gap:4px;max-width:880px;margin:0 auto;width:100%;padding:0 16px}
+  nav.tabs button{flex:none;flex-direction:row;gap:7px;font-size:14px;padding:9px 14px}
+  nav.tabs button .ic{font-size:16px}
+  nav.tabs button.active{background:var(--ink);color:#fff}
+}
+section.view{display:none;padding:14px 0 30px;animation:fade .35s ease}
+section.view.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2.title{font-family:var(--display);font-weight:800;font-size:23px;letter-spacing:-.3px;margin-bottom:3px}
+.lead{color:var(--ink-soft);font-size:14px;margin-bottom:16px;max-width:62ch}
+.card{background:var(--paper-2);border:1px solid var(--card-line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.btn{font-family:var(--display);font-weight:700;font-size:14px;border:none;border-radius:12px;padding:11px 18px;cursor:pointer;transition:transform .08s,box-shadow .15s;display:inline-flex;align-items:center;gap:7px}
+.btn:active{transform:scale(.96)}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.amber{background:var(--marigold);color:#fff}
+.btn.ghost{background:transparent;border:1.5px solid var(--card-line);color:var(--ink)}
+.btn.teal{background:var(--peacock);color:#fff}
+.btn.sound{background:var(--peacock-soft);color:var(--peacock)}
+.btn.big{font-size:16px;padding:15px 26px;border-radius:14px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* ====== TODAY ====== */
+.todaytop{display:flex;gap:16px;align-items:center;padding:18px;margin-bottom:14px;flex-wrap:wrap}
+.ring{width:96px;height:96px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .mins{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);font-weight:800}
+.ring .mins b{font-size:24px;color:var(--ink);line-height:1}
+.ring .mins span{font-size:10px;color:var(--ink-faint);font-weight:600;font-family:var(--ui-hi)}
+.todaytop .info{flex:1;min-width:180px}
+.todaytop .info h3{font-family:var(--display);font-weight:800;font-size:18px}
+.streakline{display:flex;gap:14px;margin-top:6px;font-family:var(--ui-hi);font-weight:600;font-size:13px;color:var(--ink-soft);flex-wrap:wrap}
+.streakline b{color:var(--marigold-deep)}
+.mascot{display:flex;gap:12px;align-items:flex-start;background:var(--peacock-soft);border-radius:14px;padding:13px 15px;margin-bottom:16px}
+.mascot svg{width:38px;height:38px;flex:none}
+.mascot .bubble{font-family:var(--ui-hi);font-size:14px;color:#0d5e5e}
+.focuschips{display:flex;gap:7px;flex-wrap:wrap;margin:6px 0 18px}
+.focuschip{font-family:var(--ui-hi);font-weight:600;font-size:12.5px;background:var(--marigold-soft);color:var(--marigold-deep);border-radius:20px;padding:5px 12px}
+.startwrap{text-align:center;padding:8px 0 4px}
+
+/* session overlay */
+.sessionwrap{padding:20px 18px}
+.qmeta{display:flex;justify-content:space-between;align-items:center;font-family:var(--ui-hi);font-size:13px;color:var(--ink-soft);margin-bottom:6px;font-weight:600}
+.sessbar{height:7px;background:var(--card-line);border-radius:5px;overflow:hidden;margin-bottom:16px}
+.sessbar>i{display:block;height:100%;background:var(--marigold);transition:width .3s}
+.qprompt{font-family:var(--ui-hi);font-size:16px;color:var(--ink);margin-bottom:8px;font-weight:500;text-align:center}
+.qbig{font-family:var(--disp);font-size:66px;text-align:center;color:var(--ink);margin:4px 0 6px;line-height:1.1}
+.qbig .mtr{color:var(--marigold-deep)}
+.saywrap{text-align:center;margin-bottom:12px}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:480px){.opts{grid-template-columns:1fr}}
+.opt{font-family:var(--disp);font-size:26px;background:var(--paper-2);border:1.5px solid var(--card-line);border-radius:14px;padding:14px;cursor:pointer;text-align:center;transition:.12s}
+.opt .small{display:block;font-family:var(--ui-hi);font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:2px}
+.opt:hover{border-color:var(--marigold)}
+.opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green)}
+.opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.opt.lock{pointer-events:none}
+.feedback{margin-top:14px;font-family:var(--ui-hi);font-size:15px;font-weight:600;min-height:24px;text-align:center}
+.feedback.ok{color:var(--green)}.feedback.no{color:var(--red)}
+
+/* celebration */
+.celebrate{text-align:center;padding:26px 20px}
+.celebrate .big{font-family:var(--display);font-weight:800;font-size:30px;color:var(--marigold-deep)}
+.celebrate .sc{font-family:var(--disp);font-size:18px;color:var(--ink-soft);margin:6px 0 14px}
+.deltabox{text-align:left;margin:14px auto;max-width:420px}
+.deltarow{display:flex;align-items:center;gap:10px;margin:8px 0;font-family:var(--ui-hi);font-size:14px}
+.deltarow .nm{flex:1;color:var(--ink)}
+.deltarow .pc{font-weight:700}
+.deltarow .up{color:var(--green)} .deltarow .same{color:var(--ink-faint)}
+.minibar{width:90px;height:8px;background:var(--card-line);border-radius:5px;overflow:hidden}
+.minibar>i{display:block;height:100%;background:var(--peacock)}
+.badgepop{display:inline-flex;align-items:center;gap:7px;background:var(--gold);color:#fff;font-family:var(--ui-hi);font-weight:700;font-size:13px;padding:7px 14px;border-radius:20px;margin:5px}
+
+/* ====== DIAGNOSE ====== */
+.drop{border:2px dashed var(--card-line);border-radius:16px;padding:26px 18px;text-align:center;background:var(--paper-2);cursor:pointer;transition:.15s}
+.drop:hover{border-color:var(--marigold);background:var(--marigold-soft)}
+.drop .ic{font-size:34px}
+.drop h4{font-family:var(--display);font-weight:700;font-size:16px;margin:8px 0 3px}
+.drop p{font-family:var(--ui-hi);font-size:13px;color:var(--ink-soft)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.thumb{position:relative;width:74px;height:90px;border-radius:10px;overflow:hidden;border:1px solid var(--card-line);background:var(--paper-2);display:flex;align-items:center;justify-content:center}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .pdf{font-family:var(--ui-hi);font-size:11px;color:var(--ink-soft);text-align:center;padding:4px}
+.thumb .x{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1}
+.analyzing{font-family:var(--ui-hi);color:var(--peacock);font-weight:600;text-align:center;padding:14px}
+.spinner{width:20px;height:20px;border:3px solid var(--peacock-soft);border-top-color:var(--peacock);border-radius:50%;display:inline-block;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.diag-summary{font-family:var(--ui-hi);font-size:15px;color:var(--ink);background:var(--peacock-soft);border-radius:12px;padding:13px 15px;margin:14px 0}
+.weakcard{padding:14px 16px;margin-bottom:10px}
+.weakcard .wh{display:flex;align-items:center;gap:10px}
+.weakcard .wh .lab{font-family:var(--display);font-weight:700;font-size:15px;flex:1}
+.sev{font-family:var(--ui-hi);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.sev.s3{background:var(--red-soft);color:var(--red)} .sev.s2{background:var(--marigold-soft);color:var(--marigold-deep)} .sev.s1{background:var(--green-soft);color:var(--green)}
+.exrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.exchip{font-family:var(--disp);font-size:15px;background:var(--paper);border:1px solid var(--card-line);border-radius:8px;padding:3px 9px;color:var(--ink-soft)}
+.exchip .ar{color:var(--green)} .exchip .wr{color:var(--red);text-decoration:line-through}
+.weakcard .note{font-family:var(--ui-hi);font-size:13px;color:var(--ink-soft);margin-top:8px}
+.manualgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin:12px 0}
+.mchip{font-family:var(--ui-hi);font-weight:600;font-size:13px;border:1.5px solid var(--card-line);background:var(--paper-2);color:var(--ink-soft);border-radius:12px;padding:11px 12px;cursor:pointer;text-align:left}
+.mchip.on{background:var(--marigold);color:#fff;border-color:var(--marigold)}
+.errbox{font-family:var(--ui-hi);font-size:13.5px;background:var(--red-soft);color:var(--red);border-radius:12px;padding:12px 14px;margin:12px 0}
+
+/* ====== LEARN ====== */
+.hero{padding:20px;text-align:center}
+.glyphline{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 2px;flex-wrap:wrap}
+.bigglyph{font-family:var(--disp);font-size:92px;line-height:1;color:var(--ink);min-width:110px}
+.matra-chip{background:var(--marigold-soft);border:1.5px solid var(--marigold);border-radius:16px;padding:9px 14px;min-width:84px}
+.matra-chip .sign{font-family:var(--disp);font-size:36px;color:var(--marigold-deep);min-height:42px;display:flex;align-items:center;justify-content:center}
+.matra-chip .nm{font-family:var(--ui-hi);font-size:11px;color:var(--marigold-deep);font-weight:600}
+.rom{font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink-soft);letter-spacing:1px}
+.controls{display:flex;gap:9px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.conschips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.conschip{font-family:var(--disp);font-size:20px;width:42px;height:42px;border-radius:11px;border:1.5px solid var(--card-line);background:var(--paper-2);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.conschip.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sub-h{font-family:var(--display);font-weight:700;font-size:17px;margin:24px 0 10px}
+.seg{display:inline-flex;background:var(--paper-2);border:1px solid var(--card-line);border-radius:12px;padding:3px;margin-bottom:10px}
+.seg button{font-family:var(--ui-hi);font-weight:600;font-size:13px;border:none;background:none;padding:7px 13px;border-radius:9px;cursor:pointer;color:var(--ink-soft)}
+.seg button.on{background:var(--ink);color:#fff}
+.lettergrid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+@media(max-width:560px){.lettergrid{grid-template-columns:repeat(4,1fr);gap:7px}}
+.cell{background:var(--paper-2);border:1px solid var(--card-line);border-radius:14px;padding:10px 4px 8px;text-align:center;cursor:pointer;transition:.1s}
+.cell:hover{border-color:var(--marigold);transform:translateY(-2px)}
+.cell .g{font-family:var(--disp);font-size:30px;color:var(--ink)}
+.cell .r{font-family:var(--display);font-size:12px;color:var(--ink-faint);font-weight:600}
+.cell.swar .g{color:var(--peacock)}
+.bk-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.bk-cell{background:var(--paper-2);border:1px solid var(--card-line);border-radius:14px;padding:9px 4px;text-align:center;cursor:pointer}
+.bk-cell:hover{border-color:var(--marigold)}
+.bk-cell .g{font-family:var(--disp);font-size:28px;color:var(--ink)}
+.bk-cell .lbl{font-family:var(--display);font-size:11px;color:var(--ink-faint);font-weight:600}
+.bk-cell .mn{font-family:var(--ui-hi);font-size:10px;color:var(--marigold-deep);font-weight:600}
+
+/* ====== PROGRESS ====== */
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{padding:15px 10px;text-align:center}
+.stat .n{font-family:var(--display);font-weight:800;font-size:26px;color:var(--marigold-deep)}
+.stat .l{font-family:var(--ui-hi);font-size:12px;color:var(--ink-soft);font-weight:600}
+.skillprog{padding:16px 18px;margin-bottom:12px}
+.skillrow{margin:12px 0}
+.skillrow .top{display:flex;justify-content:space-between;font-family:var(--ui-hi);font-size:13.5px;font-weight:600;margin-bottom:5px}
+.skillrow .top .pc{color:var(--peacock)}
+.bar{height:10px;background:var(--card-line);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.delta{font-family:var(--ui-hi);font-size:11px;font-weight:700;margin-left:8px}
+.delta.up{color:var(--green)} .delta.flat{color:var(--ink-faint)}
+.badges{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}
+.badge{display:flex;flex-direction:column;align-items:center;gap:4px;width:78px;text-align:center;opacity:.35}
+.badge.earned{opacity:1}
+.badge .ic{width:48px;height:48px;border-radius:50%;background:var(--card-line);display:flex;align-items:center;justify-content:center;font-size:22px}
+.badge.earned .ic{background:var(--gold);color:#fff}
+.badge .nm{font-family:var(--ui-hi);font-size:10.5px;font-weight:600;color:var(--ink-soft);line-height:1.2}
+.note{font-family:var(--body);font-size:12px;color:var(--ink-faint);margin-top:14px}
+footer{padding:18px 0 8px;text-align:center;font-family:var(--ui-hi);font-size:12px;color:var(--ink-faint)}
+
+/* confetti */
+.confetti{position:fixed;top:-10px;width:9px;height:14px;z-index:80;pointer-events:none;border-radius:2px}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.2}}
+.modalmask{position:fixed;inset:0;background:rgba(24,24,58,.5);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;overflow:auto}
+.modal{background:var(--paper);border-radius:20px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.helpbox{font-family:var(--ui-hi);font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+.helpbox b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="12" fill="#18183A"/><rect x="11" y="13" width="26" height="3" rx="1.5" fill="#E2872A"/><text x="24" y="36" font-family="Tiro Devanagari Hindi, serif" font-size="22" fill="#fff" text-anchor="middle">हि</text></svg>
+    <div>
+      <div class="mark">हिंदी मित्र</div>
+    </div>
+    <span class="en">Hindi Mitra</span>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrapn">
+    <button data-tab="today" class="active"><span class="ic">◎</span><span>आज</span></button>
+    <button data-tab="diag"><span class="ic">📄</span><span>जाँच</span></button>
+    <button data-tab="learn"><span class="ic">अ</span><span>सीखें</span></button>
+    <button data-tab="prog"><span class="ic">★</span><span>प्रगति</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ===== TODAY ===== -->
+<section class="view show" id="today">
+  <div class="card todaytop">
+    <div class="ring">
+      <svg width="96" height="96" viewBox="0 0 96 96">
+        <circle cx="48" cy="48" r="42" fill="none" stroke="#ECE6D8" stroke-width="8"/>
+        <circle id="ringFill" cx="48" cy="48" r="42" fill="none" stroke="#E2872A" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+      </svg>
+      <div class="mins"><b id="ringMin">0</b><span>/ 10 मिनट</span></div>
+    </div>
+    <div class="info">
+      <h3 id="greet">नमस्ते! 👋</h3>
+      <div class="streakline">
+        <span>🔥 <b id="streakN">0</b> दिन लगातार</span>
+        <span>✓ <b id="todayQ">0</b> आज के सवाल</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mascot">
+    <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#137C7C"/><circle cx="17" cy="21" r="3.4" fill="#fff"/><circle cx="31" cy="21" r="3.4" fill="#fff"/><circle cx="17.8" cy="21.8" r="1.5" fill="#18183A"/><circle cx="31.8" cy="21.8" r="1.5" fill="#18183A"/><path d="M16 30 q8 7 16 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+    <div class="bubble" id="mascotTip">रोज़ सिर्फ़ 10 मिनट — और मात्राएँ पक्की!</div>
+  </div>
+
+  <h2 class="title">आज का अभ्यास</h2>
+  <p class="lead" id="todayLead">यह अभ्यास तुम्हारी अपनी कमज़ोर मात्राओं पर बना है। शुरू करने के लिए नीचे दबाओ।</p>
+  <div class="focuschips" id="focusChips"></div>
+
+  <div class="card" id="sessionCard">
+    <div class="startwrap" style="padding:26px 16px">
+      <button class="btn amber big" id="startBtn">▶ आज का अभ्यास शुरू करें</button>
+      <p style="font-family:var(--ui-hi);font-size:13px;color:var(--ink-faint);margin-top:12px">12 छोटे सवाल · लगभग 4–6 मिनट</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIAGNOSE ===== -->
+<section class="view" id="diag">
+  <h2 class="title">गलतियों की जाँच</h2>
+  <p class="lead">छात्र की उत्तर-पुस्तिका की फ़ोटो या स्कैन अपलोड करो। हिंदी मित्र हस्तलेख पढ़कर बार-बार होने वाली मात्रा व वर्तनी की गलतियाँ ढूँढेगा और उसी हिसाब से रोज़ का अभ्यास बनाएगा।</p>
+
+  <div class="drop" id="dropZone">
+    <div class="ic">📄⬆️</div>
+    <h4>उत्तर-पुस्तिका अपलोड करें</h4>
+    <p>फ़ोटो (JPG/PNG) या PDF · एक या कई पन्ने</p>
+    <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style="display:none">
+  </div>
+  <div class="thumbs" id="thumbs"></div>
+  <div style="text-align:center;margin:6px 0 4px">
+    <button class="btn primary" id="analyzeBtn" disabled>🔍 गलतियाँ ढूँढो</button>
+  </div>
+  <div id="analyzeState"></div>
+
+  <div id="diagResult"></div>
+
+  <div class="card" style="padding:16px 18px;margin-top:18px">
+    <h3 style="font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:4px">या ख़ुद चुनें</h3>
+    <p style="font-family:var(--ui-hi);font-size:13px;color:var(--ink-soft)">स्कैन न हो तो जिन चीज़ों में दिक़्क़त है उन्हें चुनकर भी अभ्यास बना सकते हैं।</p>
+    <div class="manualgrid" id="manualGrid"></div>
+    <button class="btn amber" id="manualApply">इन पर अभ्यास बनाओ</button>
+  </div>
+</section>
+
+<!-- ===== LEARN ===== -->
+<section class="view" id="learn">
+  <h2 class="title">सीखें</h2>
+  <p class="lead">मात्रा कैसे आवाज़ बदलती है, पूरी वर्णमाला और बारहखड़ी — सब एक जगह। व्यंजन <b style="color:var(--ink)">काला</b>, मात्रा <b style="color:var(--marigold-deep)">नारंगी</b>।</p>
+
+  <div class="card hero">
+    <div style="font-family:var(--ui-hi);font-weight:600;color:var(--peacock);font-size:13px" id="hEye">अ · a</div>
+    <div class="glyphline">
+      <div class="bigglyph" id="hGlyph">क</div>
+      <div class="matra-chip"><div class="sign" id="hSign">—</div><div class="nm" id="hNm">अ ध्वनि</div></div>
+    </div>
+    <div class="rom" id="hRom">ka</div>
+    <div style="font-family:var(--ui-hi);color:var(--ink-soft);font-size:14px;margin-top:10px" id="hEx"></div>
+    <div class="controls">
+      <button class="btn ghost" id="hPrev">‹ पिछली</button>
+      <button class="btn amber" id="hNext">अगली ›</button>
+    </div>
+    <div class="conschips" id="hCons"></div>
+  </div>
+
+  <h3 class="sub-h">वर्णमाला</h3>
+  <div class="seg" id="vSeg"><button class="on" data-v="swar">स्वर</button><button data-v="vyanjan">व्यंजन</button></div>
+  <div class="lettergrid" id="letterGrid"></div>
+
+  <h3 class="sub-h">बारहखड़ी</h3>
+  <div class="conschips" id="bkCons" style="justify-content:flex-start;margin-bottom:12px"></div>
+  <div class="card" style="padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <strong style="font-family:var(--display);font-size:16px" id="bkTitle">क की बारहखड़ी</strong>
+    </div>
+    <div class="bk-row" id="bkRow"></div>
+  </div>
+</section>
+
+<!-- ===== PROGRESS ===== -->
+<section class="view" id="prog">
+  <h2 class="title">तुम्हारी प्रगति</h2>
+  <p class="lead">हर अभ्यास के बाद देखो कि कमज़ोर मात्राएँ कैसे मज़बूत हो रही हैं।</p>
+  <div class="statrow">
+    <div class="card stat"><div class="n" id="stStreak">0</div><div class="l">दिन लगातार</div></div>
+    <div class="card stat"><div class="n" id="stCorrect">0</div><div class="l">कुल सही</div></div>
+    <div class="card stat"><div class="n" id="stAcc">0%</div><div class="l">सटीकता</div></div>
+  </div>
+  <div class="card skillprog">
+    <h3 style="font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:4px">कौशल-स्तर · Skill mastery</h3>
+    <p style="font-family:var(--ui-hi);font-size:12.5px;color:var(--ink-soft);margin-bottom:6px">पहली बार से अब तक का सुधार। हरा तीर = आगे बढ़े।</p>
+    <div id="skillBars"><p style="font-family:var(--ui-hi);font-size:13px;color:var(--ink-faint)">पहला अभ्यास पूरा करते ही यहाँ सुधार दिखने लगेगा।</p></div>
+  </div>
+  <div class="card skillprog">
+    <h3 style="font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:8px">तमग़े · Badges</h3>
+    <div class="badges" id="badges"></div>
+  </div>
+  <button class="btn ghost" id="resetBtn" style="margin-top:14px">सब मिटाओ · Reset</button>
+  <p class="note" id="saveNote">प्रगति इसी ब्राउज़र में सुरक्षित रहती है।</p>
+</section>
+
+<footer>हिंदी मित्र · CBSE कक्षा 9–10 के लिए · रोज़ 10 मिनट</footer>
+</main>
+
+<div id="modalRoot"></div>
+
+<script>
+/* =========================== DATA =========================== */
+const SWARS=[
+ {ch:'अ',m:'',rom:'a',nm:'अ',ex:'अनार'},{ch:'आ',m:'ा',rom:'aa',nm:'आ',ex:'आम'},
+ {ch:'इ',m:'ि',rom:'i',nm:'छोटी इ',ex:'इमली'},{ch:'ई',m:'ी',rom:'ee',nm:'बड़ी ई',ex:'ईख'},
+ {ch:'उ',m:'ु',rom:'u',nm:'छोटा उ',ex:'उल्लू'},{ch:'ऊ',m:'ू',rom:'oo',nm:'बड़ा ऊ',ex:'ऊन'},
+ {ch:'ऋ',m:'ृ',rom:'ri',nm:'ऋ',ex:'ऋषि'},{ch:'ए',m:'े',rom:'e',nm:'ए',ex:'एड़ी'},
+ {ch:'ऐ',m:'ै',rom:'ai',nm:'ऐ',ex:'ऐनक'},{ch:'ओ',m:'ो',rom:'o',nm:'ओ',ex:'ओखली'},
+ {ch:'औ',m:'ौ',rom:'au',nm:'औ',ex:'औरत'},{ch:'अं',m:'ं',rom:'an',nm:'अनुस्वार',ex:'अंगूर'},
+ {ch:'अः',m:'ः',rom:'ah',nm:'विसर्ग',ex:'अतः'}
+];
+const VYANJAN=[['क','ka'],['ख','kha'],['ग','ga'],['घ','gha'],['ङ','nga'],['च','cha'],['छ','chha'],['ज','ja'],['झ','jha'],['ञ','nya'],['ट','ta'],['ठ','tha'],['ड','da'],['ढ','dha'],['ण','na'],['त','ta'],['थ','tha'],['द','da'],['ध','dha'],['न','na'],['प','pa'],['फ','pha'],['ब','ba'],['भ','bha'],['म','ma'],['य','ya'],['र','ra'],['ल','la'],['व','va'],['श','sha'],['ष','sha'],['स','sa'],['ह','ha'],['क्ष','ksha'],['त्र','tra'],['ज्ञ','gya'],['ड़','rda'],['ढ़','rha']];
+const PICK=['क','ख','ग','च','ज','ट','ड','त','द','न','प','ब','म','य','र','ल','व','श','स','ह'];
+
+const SKILLS={
+ matra_short_long:{label:'छोटी इ / बड़ी ई · उ/ऊ',en:'short vs long vowel matras'},
+ matra_form:{label:'मात्रा का सही रूप',en:'applying the correct matra'},
+ anusvara:{label:'अनुस्वार ं / चंद्रबिंदु ँ',en:'anusvara vs chandrabindu'},
+ sibilants:{label:'श / ष / स',en:'sibilants'},
+ na_retroflex:{label:'न / ण',en:'dental vs retroflex na'},
+ conjuncts:{label:'संयुक्त अक्षर क्ष त्र ज्ञ',en:'conjuncts & half-letters'},
+ spelling_general:{label:'सामान्य वर्तनी',en:'general spelling'}
+};
+
+const IEE=[
+ // छोटी इ
+ {w:'दिन',a:'इ'},{w:'किताब',a:'इ'},{w:'चिड़िया',a:'इ'},{w:'दिल',a:'इ'},
+ {w:'किसान',a:'इ'},{w:'शिक्षक',a:'इ'},{w:'विद्या',a:'इ'},{w:'दिशा',a:'इ'},
+ {w:'मित्र',a:'इ'},{w:'विषय',a:'इ'},{w:'नियम',a:'इ'},{w:'चित्र',a:'इ'},
+ {w:'परिश्रम',a:'इ'},{w:'विचार',a:'इ'},{w:'निर्णय',a:'इ'},
+ {w:'परिचय',a:'इ'},{w:'अभिनय',a:'इ'},{w:'निवास',a:'इ'},
+ // बड़ी ई
+ {w:'नदी',a:'ई'},{w:'रोटी',a:'ई'},{w:'पानी',a:'ई'},{w:'गली',a:'ई'},
+ {w:'गरीब',a:'ई'},{w:'भीड़',a:'ई'},{w:'वीर',a:'ई'},{w:'जीत',a:'ई'},
+ {w:'खेती',a:'ई'},{w:'दीवार',a:'ई'},{w:'तीर',a:'ई'},{w:'बीज',a:'ई'},
+ {w:'गीत',a:'ई'},{w:'धरती',a:'ई'},{w:'पृथ्वी',a:'ई'},
+ // छोटा उ
+ {w:'गुलाब',a:'उ'},{w:'गुड़',a:'उ'},{w:'मुर्गी',a:'उ'},
+ {w:'गुरु',a:'उ'},{w:'युवा',a:'उ'},{w:'रुचि',a:'उ'},{w:'मुख',a:'उ'},
+ {w:'सुबह',a:'उ'},{w:'कुशल',a:'उ'},{w:'मुस्कान',a:'उ'},
+ {w:'युग',a:'उ'},{w:'सुविधा',a:'उ'},{w:'बुद्धि',a:'उ'},
+ // बड़ा ऊ
+ {w:'फूल',a:'ऊ'},{w:'सूरज',a:'ऊ'},{w:'दूध',a:'ऊ'},
+ {w:'भूमि',a:'ऊ'},{w:'पूजा',a:'ऊ'},{w:'दूर',a:'ऊ'},{w:'रूप',a:'ऊ'},
+ {w:'भूख',a:'ऊ'},{w:'धूप',a:'ऊ'},{w:'मूल',a:'ऊ'},{w:'जूता',a:'ऊ'},
+ {w:'मूर्ति',a:'ऊ'},{w:'पूर्ण',a:'ऊ'}
+];
+const ANUS=[
+ {w:'चाँद',a:'ँ',m:'moon'},{w:'गंगा',a:'ं',m:'Ganga'},
+ {w:'आँख',a:'ँ',m:'eye'},{w:'अंडा',a:'ं',m:'egg'},
+ {w:'गाँव',a:'ँ',m:'village'},{w:'ठंड',a:'ं',m:'cold'},
+ {w:'साँप',a:'ँ',m:'snake'},{w:'दाँत',a:'ँ',m:'tooth'},
+ {w:'पतंग',a:'ं',m:'kite'},{w:'हंस',a:'ं',m:'swan'},
+ {w:'चाँदी',a:'ँ',m:'silver'},{w:'बंदर',a:'ं',m:'monkey'},
+ {w:'माँ',a:'ँ',m:'mother'},{w:'संसार',a:'ं',m:'world'},
+ {w:'आनंद',a:'ं',m:'joy'},{w:'जंगल',a:'ं',m:'forest'},
+ {w:'पाँव',a:'ँ',m:'foot'},{w:'रंग',a:'ं',m:'colour'},
+ {w:'बाँध',a:'ँ',m:'dam'},{w:'अंधेरा',a:'ं',m:'darkness'},
+ {w:'हँसना',a:'ँ',m:'to laugh'},{w:'काँटा',a:'ँ',m:'thorn'},
+ {w:'संघर्ष',a:'ं',m:'struggle'},{w:'पंख',a:'ं',m:'feather'},
+ {w:'आँगन',a:'ँ',m:'courtyard'},{w:'मंच',a:'ं',m:'stage'},
+ {w:'ऊँचा',a:'ँ',m:'tall'},{w:'ढंग',a:'ं',m:'manner'},
+ {w:'काँच',a:'ँ',m:'glass'},{w:'संपर्क',a:'ं',m:'contact'}
+];
+const SIB=[
+ {c:'शेर',w:['सेर','षेर'],m:'lion'},
+ {c:'भाषा',w:['भासा','भाशा'],m:'language'},
+ {c:'मनुष्य',w:['मनुश्य','मनुस्य'],m:'human'},
+ {c:'विशेष',w:['विसेष','विशेश'],m:'special'},
+ {c:'सूरज',w:['शूरज'],m:'sun'},
+ {c:'देश',w:['देस','देष'],m:'country'},
+ {c:'शिक्षा',w:['सिक्षा','षिक्षा'],m:'education'},
+ {c:'भविष्य',w:['भविश्य','भविस्य'],m:'future'},
+ {c:'विश्वास',w:['विस्वास','विष्वास'],m:'trust'},
+ {c:'संस्कृति',w:['संश्कृति','संस्क्रिती'],m:'culture'},
+ {c:'साहस',w:['शाहस'],m:'courage'},
+ {c:'प्रश्न',w:['प्रसन','प्रशन'],m:'question'},
+ {c:'आकाश',w:['आकास','आकाष'],m:'sky'},
+ {c:'राष्ट्र',w:['राश्ट्र','रास्ट्र'],m:'nation'},
+ {c:'स्वास्थ्य',w:['स्वाश्थ्य','स्वाष्थ्य'],m:'health'},
+ {c:'शांति',w:['सांति','षांति'],m:'peace'},
+ {c:'श्रेष्ठ',w:['श्रेश्ठ','श्रेस्ठ'],m:'best/noble'},
+ {c:'अनुशासन',w:['अनुसासन','अनुषासन'],m:'discipline'}
+];
+const NA=[
+ {c:'गणित',w:['गनित'],m:'maths'},
+ {c:'कारण',w:['कारन'],m:'reason'},
+ {c:'रामायण',w:['रामायन'],m:'Ramayana'},
+ {c:'प्रमाण',w:['प्रमान'],m:'proof'},
+ {c:'पुराण',w:['पुरान'],m:'Purana'},
+ {c:'गुण',w:['गुन'],m:'quality'},
+ {c:'चरण',w:['चरन'],m:'feet'},
+ {c:'वाणी',w:['वानी'],m:'speech'},
+ {c:'प्राण',w:['प्रान'],m:'life-breath'},
+ {c:'शरण',w:['शरन'],m:'refuge'},
+ {c:'वर्ण',w:['वर्न'],m:'letter/colour'},
+ {c:'क्षण',w:['क्षन'],m:'moment'},
+ {c:'नारायण',w:['नारायन'],m:'Narayana'},
+ {c:'गणना',w:['गनना'],m:'counting'},
+ {c:'मणि',w:['मनि'],m:'gem'},
+ {c:'रण',w:['रन'],m:'battle'}
+];
+const CONJ=[
+ {c:'क्षमा',w:['क्शमा','छमा'],m:'forgiveness'},
+ {c:'ज्ञान',w:['ग्यान','ज्यान'],m:'knowledge'},
+ {c:'त्रिशूल',w:['त्रिसूल'],m:'trident'},
+ {c:'विद्यार्थी',w:['विद्यार्थि','विधार्थी'],m:'student'},
+ {c:'क्षेत्र',w:['क्शेत्र','छेत्र'],m:'area'},
+ {c:'परीक्षा',w:['परिक्षा','परीक्शा'],m:'exam'},
+ {c:'विज्ञान',w:['विग्यान','विज्यान'],m:'science'},
+ {c:'ध्यान',w:['धयान'],m:'attention'},
+ {c:'त्याग',w:['तयाग'],m:'sacrifice'},
+ {c:'पत्र',w:['पतर'],m:'letter/leaf'},
+ {c:'मित्र',w:['मितर'],m:'friend'},
+ {c:'श्रम',w:['सरम','शरम'],m:'labour'},
+ {c:'सत्य',w:['सतय'],m:'truth'},
+ {c:'कर्तव्य',w:['करतव्य'],m:'duty'},
+ {c:'आज्ञा',w:['आगया','आग्या'],m:'command'},
+ {c:'अध्यापक',w:['अधयापक'],m:'teacher'},
+ {c:'स्वतंत्र',w:['स्वतंतर'],m:'independent'}
+];
+
+const MASCOT_TIPS=['रोज़ सिर्फ़ 10 मिनट — और मात्राएँ पक्की!','छोटी इ (ि) अक्षर के पहले, बड़ी ई (ी) बाद में लगती है।','ध्यान से सुनो, फिर चुनो — आवाज़ सबसे बड़ी मदद है।','एक बिंदु का फ़र्क पूरा अर्थ बदल देता है — हंस और हँस!','गलती से मत डरो — हर गलती एक सीख है।'];
+
+/* =========================== AUDIO (disabled for now) =========================== */
+function speak(){}
+function speakSeq(){}
+
+/* =========================== STATE =========================== */
+let S={name:'',weakAreas:[],diagnosed:false,skill:{},sessions:[],streak:0,bestStreak:0,lastDay:'',
+  totalCorrect:0,totalAns:0,todayDay:'',todaySec:0,todayQ:0,badges:[],explored:{}};
+function today(){return new Date().toISOString().slice(0,10);}
+function save(){try{localStorage.setItem('hindi_mitra',JSON.stringify(S));}catch(e){}}
+function load(){try{const r=localStorage.getItem('hindi_mitra');if(r)S=Object.assign(S,JSON.parse(r));}catch(e){document.getElementById('saveNote').textContent='इस वातावरण में प्रगति सत्र तक रहेगी। (Download & host to save permanently.)';}}
+load();
+if(S.todayDay!==today()){S.todayDay=today();S.todaySec=0;S.todayQ=0;}
+function mastery(tag){const s=S.skill[tag];if(!s||!s.history.length)return 0;return s.history[s.history.length-1];}
+function firstMastery(tag){const s=S.skill[tag];if(!s||!s.history.length)return 0;return s.history[0];}
+
+/* =========================== TABS =========================== */
+const tabBtns=document.querySelectorAll('nav.tabs button'),views=document.querySelectorAll('section.view');
+tabBtns.forEach(b=>b.onclick=()=>{tabBtns.forEach(x=>x.classList.remove('active'));b.classList.add('active');views.forEach(v=>v.classList.remove('show'));document.getElementById(b.dataset.tab).classList.add('show');window.scrollTo({top:0,behavior:'smooth'});});
+function goTab(id){document.querySelector('nav.tabs button[data-tab="'+id+'"]').click();}
+
+/* =========================== MODAL =========================== */
+function openModal(html){const r=document.getElementById('modalRoot');r.innerHTML='<div class="modalmask" onclick="if(event.target===this)closeModal()"><div class="modal">'+html+'</div></div>';}
+function closeModal(){document.getElementById('modalRoot').innerHTML='';}
+
+/* =========================== QUESTION GENERATORS ===========================
+   each returns {skill,prompt,big?,say?,answerSay,options:[{html,sub?,correct}]} */
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function baseRom(c){return (VYANJAN.find(v=>v[0]===c)||[null,'ka'])[1].replace(/a$/,'');}
+
+function gMatraForm(){
+  const c=rand(PICK),s=rand(SWARS.filter(x=>x.m));
+  const wrong=shuffle(SWARS.filter(x=>x.m&&x.ch!==s.ch)).slice(0,3);
+  const opts=shuffle([s,...wrong]).map(o=>({html:o.ch,sub:o.rom,correct:o.ch===s.ch}));
+  return {skill:'matra_form',prompt:'इस अक्षर में कौन-सी मात्रा है?',big:c+s.m,say:c+s.m,answerSay:c+s.m,options:opts};
+}
+function gMatraPick(){
+  const c=rand(PICK),s=rand(SWARS.filter(x=>x.m));
+  const wrong=shuffle(SWARS.filter(x=>x.ch!==s.ch)).slice(0,3);
+  const opts=shuffle([s,...wrong]).map(o=>({html:c+o.m,correct:o.ch===s.ch}));
+  return {skill:'matra_form',prompt:'<b>'+baseRom(c)+s.rom+'</b> — सही रूप चुनो',say:c+s.m,answerSay:c+s.m,options:opts};
+}
+function gShortLong(){
+  const it=rand(IEE),isIE=(it.a==='इ'||it.a==='ई');
+  const opts=(isIE?['इ','ई']:['उ','ऊ']).map(o=>({html:o,sub:(o==='इ'?'छोटी':o==='ई'?'बड़ी':o==='उ'?'छोटा':'बड़ा'),correct:o===it.a}));
+  return {skill:'matra_short_long',prompt:'इस शब्द में सही मात्रा कौन-सी है?',big:it.w,say:it.w,answerSay:it.w,options:opts};
+}
+function gAnusvara(){
+  const it=rand(ANUS),other=it.a==='ँ'?it.w.replace('ँ','ं'):it.w.replace('ं','ँ');
+  const opts=shuffle([{html:it.w,correct:true},{html:other,correct:false}]);
+  return {skill:'anusvara',prompt:it.m+' — सही वर्तनी चुनो (बिंदु बनाम चंद्रबिंदु)',say:it.w,answerSay:it.w,options:opts};
+}
+function gSibilant(){
+  const it=rand(SIB);
+  const opts=shuffle([{html:it.c,correct:true},...it.w.map(x=>({html:x,correct:false}))]);
+  return {skill:'sibilants',prompt:it.m+' — सही वर्तनी (श/ष/स)',say:it.c,answerSay:it.c,options:opts};
+}
+function gNa(){
+  const it=rand(NA);
+  const opts=shuffle([{html:it.c,correct:true},...it.w.map(x=>({html:x,correct:false}))]);
+  return {skill:'na_retroflex',prompt:it.m+' — सही वर्तनी (न/ण)',say:it.c,answerSay:it.c,options:opts};
+}
+function gConjunct(){
+  const it=rand(CONJ);
+  const opts=shuffle([{html:it.c,correct:true},...it.w.map(x=>({html:x,correct:false}))]);
+  return {skill:'conjuncts',prompt:it.m+' — सही वर्तनी (संयुक्त अक्षर)',say:it.c,answerSay:it.c,options:opts};
+}
+const GEN_MAP={
+ matra_form:[gMatraForm,gMatraPick],matra_short_long:[gShortLong],anusvara:[gAnusvara],
+ sibilants:[gSibilant],na_retroflex:[gNa],conjuncts:[gConjunct],
+ spelling_general:[gMatraForm,gShortLong,gSibilant,gAnusvara]
+};
+function weightedPool(){
+  const active=S.weakAreas.length?S.weakAreas:Object.keys(SKILLS).map(t=>({tag:t,severity:1}));
+  let pool=[];
+  active.forEach(w=>{const gens=GEN_MAP[w.tag]||[];const boost=mastery(w.tag)<60?2:1;const reps=(w.severity||1)*boost;for(let k=0;k<reps;k++)gens.forEach(g=>pool.push(g));});
+  if(!pool.length)pool=[gMatraForm,gShortLong,gAnusvara,gSibilant];
+  return pool;
+}
+
+/* =========================== SESSION =========================== */
+let sess=null,tick=null;
+function startSession(){
+  const pool=weightedPool();
+  const qs=[];for(let i=0;i<12;i++)qs.push(rand(pool)());
+  sess={qs,i:0,correct:0,answered:0,perSkill:{},startTs:Date.now()};
+  clearInterval(tick);tick=setInterval(()=>{S.todaySec++;renderRing();},1000);
+  renderQ();
+}
+function renderRing(){
+  const min=Math.floor(S.todaySec/60),pct=Math.min(1,S.todaySec/600);
+  document.getElementById('ringMin').textContent=min;
+  document.getElementById('ringFill').style.strokeDashoffset=264*(1-pct);
+}
+function renderQ(){
+  const card=document.getElementById('sessionCard');
+  if(sess.i>=sess.qs.length){finishSession();return;}
+  const q=sess.qs[sess.i];sess.cur=q;
+  let h='<div class="sessionwrap"><div class="qmeta"><span>सवाल '+(sess.i+1)+' / '+sess.qs.length+'</span><span>सही: '+sess.correct+'</span></div>';
+  h+='<div class="sessbar"><i style="width:'+(sess.i/sess.qs.length*100)+'%"></i></div>';
+  h+='<div class="qprompt">'+q.prompt+'</div>';
+  if(q.big)h+='<div class="qbig">'+q.big+'</div>';
+  h+='<div class="opts">'+q.options.map((o,idx)=>'<button class="opt" data-i="'+idx+'">'+o.html+(o.sub?'<span class="small">'+o.sub+'</span>':'')+'</button>').join('')+'</div>';
+  h+='<div class="feedback" id="fb"></div></div>';
+  card.innerHTML=h;
+  card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(parseInt(b.dataset.i),b));
+}
+function answer(idx,btn){
+  const q=sess.cur;if(q._done)return;q._done=true;
+  const opts=document.querySelectorAll('#sessionCard .opt');
+  opts.forEach(o=>o.classList.add('lock'));
+  const correct=q.options[idx].correct;
+  const fb=document.getElementById('fb');
+  if(correct){btn.classList.add('correct');fb.className='feedback ok';fb.textContent='✓ सही!';sess.correct++;}
+  else{btn.classList.add('wrong');opts.forEach((o,i)=>{if(q.options[i].correct)o.classList.add('correct');});fb.className='feedback no';fb.textContent='✗ सही उत्तर देखो';}
+  speak(q.answerSay);
+  sess.answered++;S.todayQ++;
+  if(!sess.perSkill[q.skill])sess.perSkill[q.skill]={s:0,c:0};
+  sess.perSkill[q.skill].s++;if(correct)sess.perSkill[q.skill].c++;
+  S.totalAns++;if(correct)S.totalCorrect++;
+  save();renderToday();
+  setTimeout(()=>{sess.i++;renderQ();},1300);
+}
+function finishSession(){
+  clearInterval(tick);
+  const dur=Math.round((Date.now()-sess.startTs)/1000);
+  // update per-skill history
+  const deltas=[];
+  Object.keys(sess.perSkill).forEach(tag=>{
+    const ps=sess.perSkill[tag];const acc=Math.round(ps.c/ps.s*100);
+    if(!S.skill[tag])S.skill[tag]={history:[]};
+    const prev=S.skill[tag].history.length?S.skill[tag].history[S.skill[tag].history.length-1]:null;
+    S.skill[tag].history.push(acc);
+    deltas.push({tag,acc,delta:prev===null?null:acc-prev});
+  });
+  S.sessions.push({date:today(),dur,answered:sess.answered,correct:sess.correct});
+  // streak
+  const y=new Date(Date.now()-864e5).toISOString().slice(0,10);
+  if(S.lastDay!==today()){S.streak=(S.lastDay===y)?S.streak+1:1;S.lastDay=today();}
+  if(S.streak>S.bestStreak)S.bestStreak=S.streak;
+  const newBadges=checkBadges();
+  save();renderToday();renderProgress();
+  showCelebration(deltas,newBadges);
+  burstConfetti();
+}
+function showCelebration(deltas,newBadges){
+  const acc=sess.answered?Math.round(sess.correct/sess.answered*100):0;
+  let msg=acc>=90?'ज़बरदस्त! 🌟':acc>=70?'बहुत बढ़िया! 👏':'अच्छी कोशिश — रोज़ करते रहो!';
+  let d='';
+  deltas.forEach(x=>{
+    const lab=SKILLS[x.tag]?SKILLS[x.tag].label:x.tag;
+    const up=x.delta!==null&&x.delta>0;
+    d+='<div class="deltarow"><span class="nm">'+lab+'</span><div class="minibar"><i style="width:'+x.acc+'%"></i></div><span class="pc '+(up?'up':'same')+'">'+x.acc+'%'+(up?' ▲'+x.delta:'')+'</span></div>';
+  });
+  let badges=newBadges.length?'<div style="margin-top:6px">'+newBadges.map(b=>'<span class="badgepop">🏅 '+b+'</span>').join('')+'</div>':'';
+  openModal('<div class="celebrate"><div class="big">'+msg+'</div><div class="sc">'+sess.correct+' / '+sess.answered+' सही · 🔥 '+S.streak+' दिन</div>'+badges+
+   '<div class="deltabox">'+d+'</div>'+
+   '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px"><button class="btn amber" onclick="closeModal();startSession();">↺ फिर से</button><button class="btn ghost" onclick="closeModal();goTab(\'prog\')">प्रगति देखो</button></div></div>');
+}
+function burstConfetti(){
+  const cols=['#E2872A','#137C7C','#2E9E5B','#E0A82E','#18183A'];
+  for(let i=0;i<36;i++){const d=document.createElement('div');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=cols[i%cols.length];d.style.animation='fall '+(1.6+Math.random()*1.2)+'s linear forwards';d.style.animationDelay=(Math.random()*.4)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3200);}
+}
+document.getElementById('startBtn').onclick=startSession;
+
+/* =========================== BADGES =========================== */
+const BADGE_DEFS=[
+ {id:'first',icon:'🎯',nm:'पहला अभ्यास',test:()=>S.sessions.length>=1},
+ {id:'streak3',icon:'🔥',nm:'3 दिन',test:()=>S.bestStreak>=3},
+ {id:'streak7',icon:'⚡',nm:'7 दिन',test:()=>S.bestStreak>=7},
+ {id:'c50',icon:'⭐',nm:'50 सही',test:()=>S.totalCorrect>=50},
+ {id:'master',icon:'👑',nm:'कौशल पक्का',test:()=>Object.keys(S.skill).some(t=>{const h=S.skill[t].history;return h.length>=2&&h[h.length-1]>=85;})}
+];
+function checkBadges(){const earned=[];BADGE_DEFS.forEach(b=>{if(b.test()&&!S.badges.includes(b.id)){S.badges.push(b.id);earned.push(b.nm);}});return earned;}
+
+/* =========================== DIAGNOSE =========================== */
+let uploads=[];
+const drop=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
+drop.onclick=()=>fileInput.click();
+fileInput.onchange=e=>{addFiles(e.target.files);fileInput.value='';};
+drop.ondragover=e=>{e.preventDefault();drop.style.borderColor='var(--marigold)';};
+drop.ondragleave=()=>drop.style.borderColor='';
+drop.ondrop=e=>{e.preventDefault();drop.style.borderColor='';addFiles(e.dataTransfer.files);};
+function addFiles(list){[...list].forEach(f=>{if(f.type.startsWith('image/')||f.type==='application/pdf')uploads.push({file:f,url:f.type.startsWith('image/')?URL.createObjectURL(f):null});});renderThumbs();}
+function renderThumbs(){
+  const t=document.getElementById('thumbs');t.innerHTML='';
+  uploads.forEach((u,i)=>{const d=document.createElement('div');d.className='thumb';d.innerHTML=(u.url?'<img src="'+u.url+'">':'<div class="pdf">📄 PDF</div>')+'<button class="x" data-i="'+i+'">×</button>';t.appendChild(d);});
+  t.querySelectorAll('.x').forEach(b=>b.onclick=()=>{uploads.splice(parseInt(b.dataset.i),1);renderThumbs();});
+  document.getElementById('analyzeBtn').disabled=uploads.length===0;
+}
+function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('read'));r.readAsDataURL(file);});}
+
+const ANALYZE_PROMPT=`You are an expert CBSE Hindi teacher analysing a class-9 student's HANDWRITTEN answer sheet image(s). Find the student's recurring Hindi spelling and MATRA mistakes.
+Return ONLY valid JSON (no markdown, no backticks, no prose). Use EXACTLY these tag values for weak areas: "matra_short_long","matra_form","anusvara","sibilants","na_retroflex","conjuncts","spelling_general".
+Schema:
+{"summary":"<one warm sentence in Hindi about the main issue>","weak_areas":[{"tag":"<one allowed tag>","label":"<short Hindi label>","severity":<1-3 int, 3=most frequent>,"examples":["<wrong>→<correct in Hindi>", ...max 4],"note":"<one short Hindi tip>"}],"strengths":["<short Hindi>"]}
+List at most 4 weak_areas, most frequent first. If handwriting is unclear, infer the most likely common errors for this level. Output JSON only.`;
+
+document.getElementById('analyzeBtn').onclick=analyze;
+async function analyze(){
+  const st=document.getElementById('analyzeState');
+  st.innerHTML='<div class="analyzing"><span class="spinner"></span>हिंदी मित्र उत्तर-पुस्तिका पढ़ रहा है…</div>';
+  document.getElementById('analyzeBtn').disabled=true;
+  try{
+    const content=[];
+    for(const u of uploads){
+      const b64=await toB64(u.file);
+      if(u.file.type==='application/pdf')content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}});
+      else content.push({type:'image',source:{type:'base64',media_type:u.file.type||'image/jpeg',data:b64}});
+    }
+    content.push({type:'text',text:ANALYZE_PROMPT});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content}]})});
+    const data=await res.json();
+    const text=(data.content||[]).map(c=>c.type==='text'?c.text:'').join('');
+    const json=JSON.parse(text.replace(/```json|```/g,'').trim());
+    applyDiagnosis(json);st.innerHTML='';
+  }catch(e){
+    st.innerHTML='<div class="errbox">स्कैन-जाँच अभी नहीं चल पाई। अगर आप इस फ़ाइल को अपने सर्वर पर चला रहे हैं तो इस सुविधा के लिए अपनी Anthropic API key जोड़नी होगी। तब तक नीचे <b>"ख़ुद चुनें"</b> से समस्याएँ चुनकर अभ्यास बना लें — बाक़ी सब काम करता है।</div>';
+    document.getElementById('analyzeBtn').disabled=false;
+  }
+}
+function applyDiagnosis(json){
+  const valid=Object.keys(SKILLS);
+  S.weakAreas=(json.weak_areas||[]).filter(w=>valid.includes(w.tag)).slice(0,4).map(w=>({tag:w.tag,label:w.label||SKILLS[w.tag].label,severity:Math.max(1,Math.min(3,w.severity||2)),examples:w.examples||[],note:w.note||''}));
+  S.diagnosed=true;save();
+  renderDiagResult(json.summary,json.strengths);renderToday();
+}
+function renderDiagResult(summary,strengths){
+  const box=document.getElementById('diagResult');
+  if(!S.weakAreas.length){box.innerHTML='';return;}
+  let h='<div class="diag-summary">🩺 '+(summary||'इन मात्राओं पर ध्यान देने की ज़रूरत है।')+'</div>';
+  S.weakAreas.forEach(w=>{
+    h+='<div class="card weakcard"><div class="wh"><span class="lab">'+w.label+'</span><span class="sev s'+w.severity+'">'+(w.severity===3?'सबसे ज़्यादा':w.severity===2?'अकसर':'कभी-कभी')+'</span></div>';
+    if(w.examples.length){h+='<div class="exrow">'+w.examples.map(e=>{const p=e.split('→');return '<span class="exchip">'+(p.length>1?'<span class="wr">'+p[0]+'</span> → <span class="ar">'+p[1]+'</span>':e)+'</span>';}).join('')+'</div>';}
+    if(w.note)h+='<div class="note">💡 '+w.note+'</div>';
+    h+='</div>';
+  });
+  h+='<div style="text-align:center;margin:8px 0 4px"><button class="btn amber big" onclick="goTab(\'today\')">▶ इन पर आज का अभ्यास शुरू करो</button></div>';
+  box.innerHTML=h;
+}
+// manual picker
+let manualSel=new Set();
+function renderManual(){
+  const g=document.getElementById('manualGrid');g.innerHTML='';
+  Object.keys(SKILLS).forEach(t=>{const d=document.createElement('div');d.className='mchip'+(manualSel.has(t)?' on':'');d.textContent=SKILLS[t].label;d.onclick=()=>{manualSel.has(t)?manualSel.delete(t):manualSel.add(t);renderManual();};g.appendChild(d);});
+}
+document.getElementById('manualApply').onclick=()=>{
+  if(!manualSel.size){alert('कम से कम एक चीज़ चुनो');return;}
+  S.weakAreas=[...manualSel].map(t=>({tag:t,label:SKILLS[t].label,severity:2,examples:[],note:''}));
+  S.diagnosed=true;save();renderToday();
+  document.getElementById('diagResult').innerHTML='<div class="diag-summary">✅ अभ्यास तैयार! "आज" टैब में जाकर शुरू करो।</div>';
+  goTab('today');
+};
+
+/* =========================== TODAY RENDER =========================== */
+function renderToday(){
+  document.getElementById('greet').textContent=S.diagnosed?'चलो, अभ्यास करें! 💪':'नमस्ते! 👋';
+  document.getElementById('streakN').textContent=S.streak;
+  document.getElementById('todayQ').textContent=S.todayQ;
+  renderRing();
+  document.getElementById('mascotTip').textContent=rand(MASCOT_TIPS);
+  const fc=document.getElementById('focusChips');
+  if(S.weakAreas.length){fc.innerHTML=S.weakAreas.map(w=>'<span class="focuschip">'+w.label+'</span>').join('');document.getElementById('todayLead').textContent='यह अभ्यास तुम्हारी अपनी कमज़ोर मात्राओं पर बना है।';}
+  else{fc.innerHTML='<span class="focuschip" style="background:var(--peacock-soft);color:var(--peacock)">सभी मात्राएँ — मिश्रित</span>';document.getElementById('todayLead').innerHTML='अभी सामान्य अभ्यास चल रहा है। बेहतर नतीजे के लिए <b>"जाँच"</b> टैब में उत्तर-पुस्तिका अपलोड करो।';}
+}
+
+/* =========================== LEARN =========================== */
+let hCons='क',hIdx=0;
+function renderHCons(){const b=document.getElementById('hCons');b.innerHTML='';PICK.forEach(c=>{const d=document.createElement('div');d.className='conschip'+(c===hCons?' sel':'');d.textContent=c;d.onclick=()=>{hCons=c;hIdx=0;renderHCons();renderH();};b.appendChild(d);});}
+function renderH(){const s=SWARS[hIdx];document.getElementById('hGlyph').textContent=hCons+s.m;document.getElementById('hSign').textContent=s.m||'—';document.getElementById('hNm').textContent=s.nm+' ध्वनि';document.getElementById('hEye').textContent=s.ch+' · '+s.rom;document.getElementById('hRom').textContent=baseRom(hCons)+s.rom;document.getElementById('hEx').innerHTML='उदाहरण: <b>'+s.ch+'</b> जैसे <b>'+s.ex+'</b>';}
+document.getElementById('hNext').onclick=()=>{hIdx=(hIdx+1)%SWARS.length;renderH();};
+document.getElementById('hPrev').onclick=()=>{hIdx=(hIdx-1+SWARS.length)%SWARS.length;renderH();};
+let vMode='swar';
+function renderVarna(){const g=document.getElementById('letterGrid');g.innerHTML='';(vMode==='swar'?SWARS:VYANJAN).forEach(it=>{const c=document.createElement('div');const ch=vMode==='swar'?it.ch:it[0];const rom=vMode==='swar'?it.rom:it[1];c.className='cell'+(vMode==='swar'?' swar':'');c.innerHTML='<div class="g">'+ch+'</div><div class="r">'+rom+'</div>';c.onclick=()=>{speak(ch);S.explored[ch]=1;save();};g.appendChild(c);});}
+document.querySelectorAll('#vSeg button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#vSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');vMode=b.dataset.v;renderVarna();});
+let bkCons='क';
+function renderBkCons(){const b=document.getElementById('bkCons');b.innerHTML='';PICK.forEach(c=>{const d=document.createElement('div');d.className='conschip'+(c===bkCons?' sel':'');d.textContent=c;d.onclick=()=>{bkCons=c;renderBkCons();renderBk();};b.appendChild(d);});}
+function renderBk(){document.getElementById('bkTitle').textContent=bkCons+' की बारहखड़ी';const row=document.getElementById('bkRow');row.innerHTML='';SWARS.forEach(s=>{const g=bkCons+s.m;const cell=document.createElement('div');cell.className='bk-cell';cell.innerHTML='<div class="g">'+g+'</div><div class="lbl">'+baseRom(bkCons)+s.rom+'</div><div class="mn">'+s.ch+'</div>';row.appendChild(cell);});}
+
+/* =========================== PROGRESS =========================== */
+function renderProgress(){
+  document.getElementById('stStreak').textContent=S.bestStreak;
+  document.getElementById('stCorrect').textContent=S.totalCorrect;
+  document.getElementById('stAcc').textContent=(S.totalAns?Math.round(S.totalCorrect/S.totalAns*100):0)+'%';
+  const sb=document.getElementById('skillBars');
+  const tags=Object.keys(S.skill).filter(t=>S.skill[t].history.length);
+  if(!tags.length){sb.innerHTML='<p style="font-family:var(--ui-hi);font-size:13px;color:var(--ink-faint)">पहला अभ्यास पूरा करते ही यहाँ सुधार दिखने लगेगा।</p>';}
+  else{sb.innerHTML=tags.map(t=>{const m=mastery(t),f=firstMastery(t),delta=m-f;const col=m>=85?'var(--green)':m>=60?'var(--peacock)':'var(--marigold)';return '<div class="skillrow"><div class="top"><span>'+(SKILLS[t]?SKILLS[t].label:t)+'</span><span class="pc">'+m+'%'+(delta>0?'<span class="delta up">▲'+delta+'</span>':'<span class="delta flat">'+(S.skill[t].history.length>1?'—':'नया')+'</span>')+'</span></div><div class="bar"><i style="width:'+m+'%;background:'+col+'"></i></div></div>';}).join('');}
+  const bd=document.getElementById('badges');bd.innerHTML=BADGE_DEFS.map(b=>'<div class="badge'+(S.badges.includes(b.id)?' earned':'')+'"><div class="ic">'+b.icon+'</div><div class="nm">'+b.nm+'</div></div>').join('');
+}
+document.getElementById('resetBtn').onclick=()=>{if(!confirm('सारी प्रगति मिट जाएगी। पक्का?'))return;S={name:'',weakAreas:[],diagnosed:false,skill:{},sessions:[],streak:0,bestStreak:0,lastDay:'',totalCorrect:0,totalAns:0,todayDay:today(),todaySec:0,todayQ:0,badges:[],explored:{}};save();renderToday();renderProgress();document.getElementById('diagResult').innerHTML='';};
+
+/* =========================== INIT =========================== */
+renderHCons();renderH();renderVarna();renderBkCons();renderBk();
+renderManual();renderToday();renderProgress();
+if(S.diagnosed)renderDiagResult('','');
+</script>
+</body>
+</html>
