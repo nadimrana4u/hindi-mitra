@@ -3,16 +3,14 @@ exports.handler = async function (event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  // Accept any of these env var names
-  const apiKey = process.env.GEMINI_API_KEY ||
-                 process.env.Hindi_Mitra_API_KEY ||
-                 process.env.API_KEY;
+  const apiKey = process.env.Hindi_Mitra_API_KEY ||
+                 process.env.ANTHROPIC_API_KEY;
 
   if (!apiKey) {
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Gemini API key not configured' }),
+      body: JSON.stringify({ error: 'API key not configured' }),
     };
   }
 
@@ -23,49 +21,33 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  // Convert Anthropic-style content array → Gemini parts array
-  const parts = (parsed.messages[0].content || []).map(item => {
-    if (item.type === 'image' || item.type === 'document') {
-      return { inline_data: { mime_type: item.source.media_type, data: item.source.data } };
-    }
-    return { text: item.text };
-  });
-
-  let geminiData;
+  let data;
   try {
-    const upstream = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts }],
-          generationConfig: { maxOutputTokens: 1000 },
-        }),
-      }
-    );
-    geminiData = await upstream.json();
+    const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        messages: parsed.messages,
+      }),
+    });
+    data = await upstream.json();
   } catch (err) {
     return {
       statusCode: 502,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Upstream Gemini request failed', detail: err.message }),
+      body: JSON.stringify({ error: err.message }),
     };
   }
 
-  if (geminiData.error) {
-    return {
-      statusCode: 502,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: geminiData.error.message }),
-    };
-  }
-
-  // Convert Gemini response → Anthropic-style so the client needs no changes
-  const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content: [{ type: 'text', text }] }),
+    body: JSON.stringify(data),
   };
 };
