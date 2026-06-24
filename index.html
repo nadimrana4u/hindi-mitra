@@ -476,8 +476,22 @@ const CONJ=[
 
 const MASCOT_TIPS=['रोज़ सिर्फ़ 10 मिनट — और मात्राएँ पक्की!','छोटी इ (ि) अक्षर के पहले, बड़ी ई (ी) बाद में लगती है।','ध्यान से सुनो, फिर चुनो — आवाज़ सबसे बड़ी मदद है।','एक बिंदु का फ़र्क पूरा अर्थ बदल देता है — हंस और हँस!','गलती से मत डरो — हर गलती एक सीख है।'];
 
-/* =========================== AUDIO (disabled for now) =========================== */
-function speak(){}
+/* =========================== AUDIO =========================== */
+let _hiVoice=null,_audioOK=false;
+function _loadVoices(){
+  const vv=window.speechSynthesis?speechSynthesis.getVoices():[];
+  _hiVoice=vv.find(v=>v.lang==='hi-IN')||vv.find(v=>v.lang.startsWith('hi'))||null;
+  _audioOK=!!_hiVoice;
+}
+if(window.speechSynthesis){_loadVoices();speechSynthesis.onvoiceschanged=_loadVoices;}
+function speak(text){
+  if(!text||!window.speechSynthesis)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='hi-IN';u.rate=0.82;u.pitch=1;
+  if(_hiVoice)u.voice=_hiVoice;
+  speechSynthesis.speak(u);
+}
 function speakSeq(){}
 
 /* =========================== STATE =========================== */
@@ -578,9 +592,12 @@ function renderQ(){
   h+='<div class="sessbar"><i style="width:'+(sess.i/sess.qs.length*100)+'%"></i></div>';
   h+='<div class="qprompt">'+q.prompt+'</div>';
   if(q.big)h+='<div class="qbig">'+q.big+'</div>';
+  if(q.say)h+='<div class="saywrap"><button class="btn sound" id="speakBtn">🔊 सुनो</button></div>';
   h+='<div class="opts">'+q.options.map((o,idx)=>'<button class="opt" data-i="'+idx+'">'+o.html+(o.sub?'<span class="small">'+o.sub+'</span>':'')+'</button>').join('')+'</div>';
   h+='<div class="feedback" id="fb"></div></div>';
   card.innerHTML=h;
+  const sb=card.querySelector('#speakBtn');if(sb)sb.onclick=()=>speak(q.say);
+  if(q.say)setTimeout(()=>speak(q.say),350);
   card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(parseInt(b.dataset.i),b));
 }
 function answer(idx,btn){
