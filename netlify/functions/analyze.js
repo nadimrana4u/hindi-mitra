@@ -3,12 +3,16 @@ exports.handler = async function (event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  // Accept any of these env var names
+  const apiKey = process.env.GEMINI_API_KEY ||
+                 process.env.Hindi_Mitra_API_KEY ||
+                 process.env.API_KEY;
+
   if (!apiKey) {
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'GEMINI_API_KEY not configured' }),
+      body: JSON.stringify({ error: 'Gemini API key not configured' }),
     };
   }
 
@@ -27,19 +31,35 @@ exports.handler = async function (event) {
     return { text: item.text };
   });
 
-  const upstream = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
+  let geminiData;
+  try {
+    const upstream = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts }],
+          generationConfig: { maxOutputTokens: 1000 },
+        }),
+      }
+    );
+    geminiData = await upstream.json();
+  } catch (err) {
+    return {
+      statusCode: 502,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: { maxOutputTokens: 1000 },
-      }),
-    }
-  );
+      body: JSON.stringify({ error: 'Upstream Gemini request failed', detail: err.message }),
+    };
+  }
 
-  const geminiData = await upstream.json();
+  if (geminiData.error) {
+    return {
+      statusCode: 502,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: geminiData.error.message }),
+    };
+  }
 
   // Convert Gemini response → Anthropic-style so the client needs no changes
   const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
