@@ -687,13 +687,14 @@ async function analyze(){
       else content.push({type:'image',source:{type:'base64',media_type:u.file.type||'image/jpeg',data:b64}});
     }
     content.push({type:'text',text:ANALYZE_PROMPT});
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content}]})});
+    const res=await fetch('/.netlify/functions/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content}]})});
+    if(!res.ok)throw new Error('Server error '+res.status);
     const data=await res.json();
     const text=(data.content||[]).map(c=>c.type==='text'?c.text:'').join('');
     const json=JSON.parse(text.replace(/```json|```/g,'').trim());
     applyDiagnosis(json);st.innerHTML='';
   }catch(e){
-    st.innerHTML='<div class="errbox">स्कैन-जाँच अभी नहीं चल पाई। अगर आप इस फ़ाइल को अपने सर्वर पर चला रहे हैं तो इस सुविधा के लिए अपनी Anthropic API key जोड़नी होगी। तब तक नीचे <b>"ख़ुद चुनें"</b> से समस्याएँ चुनकर अभ्यास बना लें — बाक़ी सब काम करता है।</div>';
+    st.innerHTML='<div class="errbox">स्कैन-जाँच नहीं चल पाई। कृपया दोबारा कोशिश करें। अगर समस्या बनी रहे तो नीचे <b>"ख़ुद चुनें"</b> से अभ्यास बना लें।</div>';
     document.getElementById('analyzeBtn').disabled=false;
   }
 }
