@@ -90,6 +90,8 @@ h2.title{font-family:var(--display);font-weight:800;font-size:23px;letter-spacin
 .qprompt{font-family:var(--ui-hi);font-size:16px;color:var(--ink);margin-bottom:8px;font-weight:500;text-align:center}
 .qbig{font-family:var(--disp);font-size:66px;text-align:center;color:var(--ink);margin:4px 0 6px;line-height:1.1}
 .qbig .mtr{color:var(--marigold-deep)}
+.qsent{font-family:var(--ui-hi);font-size:19px;text-align:center;color:var(--ink);margin:6px 0 10px;line-height:1.7;padding:0 6px}
+.qsent .blank{color:var(--marigold-deep);font-weight:700;border-bottom:2.5px solid var(--marigold-deep);padding:0 4px}
 .saywrap{text-align:center;margin-bottom:12px}
 .opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(max-width:480px){.opt{font-size:20px;padding:11px 6px}.qbig{font-size:48px}}
@@ -474,6 +476,30 @@ const CONJ=[
  {c:'स्वतंत्र',w:['स्वतंतर'],m:'independent'}
 ];
 
+const VOCAB=[
+ ...ANUS.map(w=>({w:w.w,m:w.m})),
+ ...SIB.map(w=>({w:w.c,m:w.m})),
+ ...NA.map(w=>({w:w.c,m:w.m})),
+ ...CONJ.map(w=>({w:w.c,m:w.m}))
+];
+const SENT=[
+ {s:'रात को ___ चमकता है।',c:'चाँद',w:['सूरज','तारा','बादल']},
+ {s:'खेत में ___ हल चलाता है।',c:'किसान',w:['शिक्षक','नेता','व्यापारी']},
+ {s:'विद्यालय में ___ पढ़ाते हैं।',c:'अध्यापक',w:['किसान','डॉक्टर','सैनिक']},
+ {s:'परीक्षा में ___ ज़रूरी है।',c:'ध्यान',w:['खेल','आराम','नींद']},
+ {s:'___ ज्ञान का भंडार है।',c:'पुस्तक',w:['दुकान','मैदान','बाज़ार']},
+ {s:'___ से क्षमा माँगनी चाहिए।',c:'गलती',w:['सफलता','खुशी','ताकत']},
+ {s:'देश के लिए ___ करना वीरता है।',c:'त्याग',w:['झगड़ा','विश्राम','पलायन']},
+ {s:'सच बोलना ___ है।',c:'सत्य',w:['झूठ','पाप','कमज़ोरी']},
+ {s:'___ की रक्षा करना हमारा कर्तव्य है।',c:'प्रकृति',w:['शत्रु','आलस','बुराई']},
+ {s:'अच्छा ___ जीवन की नींव है।',c:'ज्ञान',w:['भोजन','वस्त्र','मकान']},
+ {s:'गंगा भारत की पवित्र ___ है।',c:'नदी',w:['पहाड़','झील','भूमि']},
+ {s:'___ से फ़सल उगाई जाती है।',c:'भूमि',w:['वायु','बादल','नदी']},
+ {s:'माँ का ___ सबसे बड़ा होता है।',c:'प्यार',w:['गुस्सा','डर','काम']},
+ {s:'विद्यार्थी को ___ करना चाहिए।',c:'परिश्रम',w:['आलस','नींद','खेल']},
+ {s:'___ में जंगल और पहाड़ होते हैं।',c:'प्रकृति',w:['बाज़ार','शहर','विद्यालय']}
+];
+
 const MASCOT_TIPS=['रोज़ सिर्फ़ 10 मिनट — और मात्राएँ पक्की!','छोटी इ (ि) अक्षर के पहले, बड़ी ई (ी) बाद में लगती है।','ध्यान से सुनो, फिर चुनो — आवाज़ सबसे बड़ी मदद है।','एक बिंदु का फ़र्क पूरा अर्थ बदल देता है — हंस और हँस!','गलती से मत डरो — हर गलती एक सीख है।'];
 
 /* =========================== AUDIO =========================== */
@@ -557,10 +583,32 @@ function gConjunct(){
   const opts=shuffle([{html:it.c,correct:true},...it.w.map(x=>({html:x,correct:false}))]);
   return {skill:'conjuncts',prompt:it.m+' — सही वर्तनी (संयुक्त अक्षर)',say:it.c,answerSay:it.c,options:opts};
 }
+function gMatraToVowel(){
+  const s=rand(SWARS.filter(x=>x.m));
+  const wrong=shuffle(SWARS.filter(x=>x.m&&x.ch!==s.ch)).slice(0,3);
+  const opts=shuffle([{html:s.ch,sub:s.rom,correct:true},...wrong.map(x=>({html:x.ch,sub:x.rom,correct:false}))]);
+  return {skill:'matra_form',prompt:'यह मात्रा किस स्वर की है?',big:s.m,say:s.ch,answerSay:s.ch,options:opts};
+}
+function gMeaningPick(){
+  const it=rand(VOCAB);
+  const wrong=shuffle(VOCAB.filter(x=>x.w!==it.w&&x.m!==it.m)).slice(0,3);
+  const opts=shuffle([{html:it.m,correct:true},...wrong.map(x=>({html:x.m,correct:false}))]);
+  return {skill:'spelling_general',prompt:'इस शब्द का अर्थ क्या है?',big:it.w,say:it.w,answerSay:it.w,options:opts};
+}
+function gSentFill(){
+  const it=rand(SENT);
+  const opts=shuffle([{html:it.c,correct:true},...it.w.map(x=>({html:x,correct:false}))]);
+  const display=it.s.replace('___','<span class="blank">___</span>');
+  return {skill:'spelling_general',prompt:'सही शब्द चुनकर वाक्य पूरा करो',sent:display,say:it.c,answerSay:it.c,options:opts};
+}
 const GEN_MAP={
- matra_form:[gMatraForm,gMatraPick],matra_short_long:[gShortLong],anusvara:[gAnusvara],
- sibilants:[gSibilant],na_retroflex:[gNa],conjuncts:[gConjunct],
- spelling_general:[gMatraForm,gShortLong,gSibilant,gAnusvara]
+ matra_form:[gMatraForm,gMatraPick,gMatraToVowel],
+ matra_short_long:[gShortLong],
+ anusvara:[gAnusvara],
+ sibilants:[gSibilant,gMeaningPick],
+ na_retroflex:[gNa,gMeaningPick],
+ conjuncts:[gConjunct,gMeaningPick],
+ spelling_general:[gMatraForm,gShortLong,gSibilant,gAnusvara,gSentFill,gMeaningPick]
 };
 function weightedPool(){
   const active=S.weakAreas.length?S.weakAreas:Object.keys(SKILLS).map(t=>({tag:t,severity:1}));
@@ -592,6 +640,7 @@ function renderQ(){
   h+='<div class="sessbar"><i style="width:'+(sess.i/sess.qs.length*100)+'%"></i></div>';
   h+='<div class="qprompt">'+q.prompt+'</div>';
   if(q.big)h+='<div class="qbig">'+q.big+'</div>';
+  if(q.sent)h+='<div class="qsent">'+q.sent+'</div>';
   if(q.say)h+='<div class="saywrap"><button class="btn sound" id="speakBtn">🔊 सुनो</button></div>';
   h+='<div class="opts">'+q.options.map((o,idx)=>'<button class="opt" data-i="'+idx+'">'+o.html+(o.sub?'<span class="small">'+o.sub+'</span>':'')+'</button>').join('')+'</div>';
   h+='<div class="feedback" id="fb"></div></div>';
