@@ -648,7 +648,7 @@ function gMatraToVowel(){
   const s=rand(SWARS.filter(x=>x.m));
   const wrong=shuffle(SWARS.filter(x=>x.m&&x.ch!==s.ch)).slice(0,3);
   const opts=shuffle([{html:s.ch,sub:s.rom,correct:true},...wrong.map(x=>({html:x.ch,sub:x.rom,correct:false}))]);
-  return {skill:'matra_form',prompt:'यह मात्रा किस स्वर की है?',big:s.m,say:s.ch,answerSay:s.ch,options:opts};
+  return {skill:'matra_form',prompt:'नारंगी मात्रा किस स्वर की है?',big:'क<span class="mtr">'+s.m+'</span>',say:s.ch,answerSay:s.ch,options:opts};
 }
 function gMeaningPick(){
   const it=rand(VOCAB);
