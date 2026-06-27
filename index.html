@@ -831,10 +831,11 @@ function applyDiagnosis(json){
   S.diagnosed=true;save();
   renderDiagResult(json.summary,json.strengths);renderToday();
 }
-function renderDiagResult(summary,strengths){
+function renderDiagResult(summary,strengths,isSaved=false){
   const box=document.getElementById('diagResult');
   if(!S.weakAreas.length){box.innerHTML='';return;}
-  let h='<div class="diag-summary">🩺 '+(summary||'इन मात्राओं पर ध्यान देने की ज़रूरत है।')+'</div>';
+  const summaryText=isSaved?'📋 पिछली जाँच के नतीजे — नई जाँच के लिए ऊपर फ़ाइल अपलोड करो।':(summary||'इन मात्राओं पर ध्यान देने की ज़रूरत है।');
+  let h='<div class="diag-summary">'+summaryText+'</div>';
   S.weakAreas.forEach(w=>{
     h+='<div class="card weakcard"><div class="wh"><span class="lab">'+w.label+'</span><span class="sev s'+w.severity+'">'+(w.severity===3?'सबसे ज़्यादा':w.severity===2?'अकसर':'कभी-कभी')+'</span></div>';
     if(w.examples.length){h+='<div class="exrow">'+w.examples.map(e=>{const p=e.split('→');return '<span class="exchip">'+(p.length>1?'<span class="wr">'+p[0]+'</span> → <span class="ar">'+p[1]+'</span>':e)+'</span>';}).join('')+'</div>';}
@@ -899,7 +900,7 @@ document.getElementById('resetBtn').onclick=()=>{if(!confirm('सारी प�
 /* =========================== INIT =========================== */
 renderHCons();renderH();renderVarna();renderBkCons();renderBk();
 renderManual();renderToday();renderProgress();
-if(S.diagnosed)renderDiagResult('','');
+if(S.diagnosed)renderDiagResult('','',true);
 </script>
 </body>
 </html>
