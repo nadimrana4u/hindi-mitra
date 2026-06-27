@@ -795,11 +795,30 @@ function renderThumbs(){
 }
 function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('read'));r.readAsDataURL(file);});}
 
-const ANALYZE_PROMPT=`You are an expert CBSE Hindi teacher analysing a class-9 student's HANDWRITTEN answer sheet image(s). Find the student's recurring Hindi spelling and MATRA mistakes.
-Return ONLY valid JSON (no markdown, no backticks, no prose). Use EXACTLY these tag values for weak areas: "matra_short_long","matra_form","anusvara","sibilants","na_retroflex","conjuncts","spelling_general".
+const ANALYZE_PROMPT=`You are an expert CBSE Hindi teacher analysing a class-9/10 student's HANDWRITTEN answer sheet image(s).
+
+STEP 1 — Read every single word on every page carefully. Do not skip any line or paragraph.
+STEP 2 — List every spelling and matra mistake you find (wrong word → correct word).
+STEP 3 — Group those mistakes into the categories below and count how often each type appears.
+STEP 4 — Output ONLY valid JSON matching the schema below. No markdown, no backticks, no prose outside JSON.
+
+Categories (use EXACTLY these tag values):
+- "matra_short_long"  → confusing छोटी इ/बड़ी ई or छोटा उ/बड़ा ऊ
+- "matra_form"        → wrong matra shape or matra on wrong letter
+- "anusvara"          → confusing अनुस्वार ं with चंद्रबिंदु ँ
+- "sibilants"         → confusing श / ष / स
+- "na_retroflex"      → confusing न with ण
+- "conjuncts"         → wrong conjunct letters (क्ष त्र ज्ञ half-letters etc.)
+- "spelling_general"  → other spelling errors not covered above
+
 Schema:
-{"summary":"<one warm sentence in Hindi about the main issue>","weak_areas":[{"tag":"<one allowed tag>","label":"<short Hindi label>","severity":<1-3 int, 3=most frequent>,"examples":["<wrong>→<correct in Hindi>", ...max 4],"note":"<one short Hindi tip>"}],"strengths":["<short Hindi>"]}
-List at most 4 weak_areas, most frequent first. If handwriting is unclear, infer the most likely common errors for this level. Output JSON only.`;
+{"summary":"<one warm sentence in Hindi summarising the main pattern>","weak_areas":[{"tag":"<tag>","label":"<short Hindi label>","severity":<1-3, 3=most frequent>,"examples":["<wrong>→<correct>", ...up to 8 real examples from the sheet],"note":"<one practical Hindi tip>"}],"strengths":["<short Hindi strength observed>"]}
+
+Rules:
+- List up to 5 weak_areas, most frequent first.
+- examples must be ACTUAL words found on the sheet, not invented ones.
+- If a page is blurry, do your best; note uncertainty in the note field.
+- Output JSON only.`;
 
 document.getElementById('analyzeBtn').onclick=analyze;
 async function analyze(){
@@ -827,7 +846,7 @@ async function analyze(){
 }
 function applyDiagnosis(json){
   const valid=Object.keys(SKILLS);
-  S.weakAreas=(json.weak_areas||[]).filter(w=>valid.includes(w.tag)).slice(0,4).map(w=>({tag:w.tag,label:w.label||SKILLS[w.tag].label,severity:Math.max(1,Math.min(3,w.severity||2)),examples:w.examples||[],note:w.note||''}));
+  S.weakAreas=(json.weak_areas||[]).filter(w=>valid.includes(w.tag)).slice(0,5).map(w=>({tag:w.tag,label:w.label||SKILLS[w.tag].label,severity:Math.max(1,Math.min(3,w.severity||2)),examples:(w.examples||[]).slice(0,8),note:w.note||''}));
   S.diagnosed=true;save();
   renderDiagResult(json.summary,json.strengths);renderToday();
 }
