@@ -66,24 +66,35 @@ exports.handler = async function (event) {
   };
 
   try {
-    // Step 1 — extract every word from the image/PDF
-    const imageBlocks = parsed.content; // array of image/document content blocks
-    const extractData = await callAPI([{ role: 'user', content: [...imageBlocks, { type: 'text', text: EXTRACT_PROMPT }] }], 2048);
-    const transcription = (extractData.content || []).map(c => c.type === 'text' ? c.text : '').join('').trim();
-
-    if (!transcription) {
-      return { statusCode: 502, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Could not read text from the uploaded file.' }) };
+    // Accept both new format {content:[...]} and old format {messages:[{role,content:[...]}]}
+    let imageBlocks = parsed.content;
+    if (!imageBlocks && parsed.messages && parsed.messages[0]) {
+      imageBlocks = (parsed.messages[0].content || []).filter(b => b.type !== 'text');
     }
+    if (!imageBlocks || imageBlocks.length === 0) {
+      return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'No images or PDF provided.' }) };
+    }
+
+    // Step 1 — transcribe every word from the image/PDF
+    const extractData = await callAPI(
+      [{ role: 'user', content: [...imageBlocks, { type: 'text', text: EXTRACT_PROMPT }] }],
+      2048
+    );
+    if (extractData.error) throw new Error('Extract API error: ' + (extractData.error.message || JSON.stringify(extractData.error)));
+    const transcription = (extractData.content || []).map(c => c.type === 'text' ? c.text : '').join('').trim();
+    if (!transcription) throw new Error('No text could be read from the uploaded file.');
 
     // Step 2 — analyse the transcription for mistakes
     const prompt = ANALYZE_PROMPT.replace('{{TRANSCRIPTION}}', transcription);
     const analyzeData = await callAPI([{ role: 'user', content: prompt }], 2048);
+    if (analyzeData.error) throw new Error('Analyse API error: ' + (analyzeData.error.message || JSON.stringify(analyzeData.error)));
     const rawText = (analyzeData.content || []).map(c => c.type === 'text' ? c.text : '').join('').trim();
     const json = JSON.parse(rawText.replace(/```json|```/g, '').trim());
 
     return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(json) };
 
   } catch (err) {
+    console.error('analyze error:', err.message);
     return { statusCode: 502, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: err.message }) };
   }
 };
